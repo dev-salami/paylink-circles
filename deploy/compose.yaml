@@ -1,0 +1,51 @@
+# Circles behind a Traefik (Coolify) proxy.
+# Keep env outside git (e.g. /opt/circles/secrets.env, mode 600).
+# Build context is the repository root (.. from this file).
+name: circles
+services:
+  app:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    image: paylink-circles:${CIRCLES_REVISION:-latest}
+    env_file:
+      - path: ${CIRCLES_ENV_FILE:-/opt/circles/secrets.env}
+    environment:
+      PORT: "3020"
+      HOSTNAME: 0.0.0.0
+      DATA_DIR: /data
+    volumes:
+      - circles-data:/data
+    expose:
+      - "3020"
+    restart: unless-stopped
+    logging: {driver: json-file, options: {max-size: "10m", max-file: "3"}}
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3020/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    networks: [coolify]
+    labels:
+      traefik.enable: "true"
+      traefik.docker.network: coolify
+      traefik.http.middlewares.circles-https.redirectscheme.scheme: https
+      traefik.http.middlewares.circles-https.redirectscheme.permanent: "true"
+      traefik.http.services.circles.loadbalancer.server.port: "3020"
+      traefik.http.routers.circles-http.entrypoints: http
+      traefik.http.routers.circles-http.middlewares: circles-https
+      traefik.http.routers.circles-http.rule: Host(`${CIRCLES_HOST:-circles.181labs.build}`)
+      traefik.http.routers.circles-http.service: circles
+      traefik.http.routers.circles.entrypoints: https
+      traefik.http.routers.circles.rule: Host(`${CIRCLES_HOST:-circles.181labs.build}`)
+      traefik.http.routers.circles.tls: "true"
+      traefik.http.routers.circles.tls.certresolver: letsencrypt
+      traefik.http.routers.circles.service: circles
+
+volumes:
+  circles-data:
+
+networks:
+  coolify:
+    external: true

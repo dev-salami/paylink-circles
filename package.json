@@ -1,0 +1,40 @@
+{
+  "name": "paylink-circles",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Circles: bill splitting and ajo group savings in Nimiq Pay. NIM mainnet and USDT on Polygon.",
+  "license": "MIT",
+  "scripts": {
+    "dev": "next dev -p 3020 -H 0.0.0.0",
+    "build": "next build",
+    "start": "next start -p 3020",
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "testnet:pay": "tsx scripts/testnet-pay.ts",
+    "testnet:e2e": "tsx scripts/testnet-e2e.ts"
+  },
+  "dependencies": {
+    "@nimiq/mini-app-sdk": "^0.2.5",
+    "next": "^15.5.6",
+    "qrcode": "^1.5.4",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "viem": "^2.38.0"
+  },
+  "devDependencies": {
+    "@nimiq/core": "2.23.0",
+    "@types/node": "^22.18.8",
+    "@types/qrcode": "^1.5.6",
+    "@types/react": "^19.1.16",
+    "@types/react-dom": "^19.1.9",
+    "autoprefixer": "^10.4.21",
+    "eslint": "^9.36.0",
+    "eslint-config-next": "^15.5.6",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^3.4.17",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.4"
+  }
+}
